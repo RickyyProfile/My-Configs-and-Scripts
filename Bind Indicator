@@ -1,0 +1,12 @@
+local font = draw.CreateFont("Tahoma", 25, 100)
+callbacks.Register("Draw", function()
+    draw.SetFont(font)
+    local w, h = draw.GetScreenSize()
+    draw.Color(128, 0, 0, 255)
+    if (gui.GetValue("rbot.master")) then
+        draw.TextShadow(w * 0.21, h - 35, "RageBot")
+    end
+    if (gui.GetValue("rbot.hitscan.mode.shared.autowall") == true) then
+        draw.TextShadow(w * 0.253, h - 35, "AutoWall")
+    end
+end)
