@@ -1,0 +1,46 @@
+local IN_USE = bit.lshift(1, 5)
+
+local TEAM_T = 2
+local TEAM_CT = 3
+
+local function areAllTerroristsDead()
+    for _, player in pairs(entities.FindByClass("CCSPlayer")) do
+        if player:GetTeamNumber() == TEAM_T and player:IsAlive() then
+            return false
+        end
+    end
+
+    return true
+end
+
+callbacks.Register("CreateMove", function(cmd) 
+    local localPlayer = entities.GetLocalPlayer()
+    local bomb = entities.FindByClass("CPlantedC4")[1]
+
+    if not localPlayer or not bomb then
+        return
+    end
+
+    if localPlayer:GetTeamNumber() ~= TEAM_CT then
+        return
+    end
+
+    if not areAllTerroristsDead() then
+        return
+    end
+
+    if not (bomb:GetProp("m_bBombTicking") and bomb:GetProp("m_bBombDefused") == 0 and globals.CurTime() < bomb:GetProp("m_flC4Blow")) then
+        return
+    end
+
+    if bomb:GetProp("m_flDefuseCountDown") > bomb:GetProp("m_flC4Blow") then
+        return
+    end
+
+    local distance = (bomb:GetAbsOrigin() - localPlayer:GetAbsOrigin()):Length()
+
+    if distance <= 75 then
+        cmd.buttons = IN_USE
+        cmd.viewangles = EulerAngles(89, 0, 0)
+    end
+end)
